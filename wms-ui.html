@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS iOS应用原型</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f7;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .prototype-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            padding-bottom: 50px;
+        }
+        
+        .prototype {
+            width: 320px;
+            height: 680px;
+            background-color: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            border: 1px solid #ddd;
+        }
+        
+        .notch {
+            position: absolute;
+            width: 160px;
+            height: 30px;
+            background-color: #000;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+        }
+        
+        .screen {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            background-color: #f8f8f8;
+        }
+        
+        .status-bar {
+            height: 44px;
+            width: 100%;
+            padding: 0 20px;
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .status-bar-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .content {
+            height: calc(100% - 94px);
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .nav-bar {
+            height: 50px;
+            width: 100%;
+            background-color: #FFFFFF;
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #eeeeee;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 10px;
+            width: 20%;
+        }
+        
+        .nav-item.active {
+            color: #007AFF;
+        }
+        
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .button {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .button.secondary {
+            background-color: #F2F2F7;
+            color: #007AFF;
+        }
+        
+        .button.danger {
+            background-color: #FF3B30;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #F8F8F8;
+            margin-bottom: 5px;
+        }
+        
+        .icon-badge {
+            background-color: #FF3B30;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        .list-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #EFEFEF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #E9F6FF;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007AFF;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+        
+        .list-content {
+            flex: 1;
+        }
+        
+        .list-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .list-description {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .list-right {
+            color: #999;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .list-right i {
+            margin-left: 5px;
+            font-size: 16px;
+        }
+        
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .grid-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .grid-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #E9F6FF;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007AFF;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .grid-title {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .grid-item.disabled {
+            opacity: 0.6;
+        }
+        
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .scanner-frame {
+            width: 220px;
+            height: 220px;
+            border: 2px solid white;
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scanner-line {
+            width: 90%;
+            height: 2px;
+            background-color: #007AFF;
+            position: absolute;
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 20px; }
+            50% { top: 200px; }
+            100% { top: 20px; }
+        }
+        
+        .scanner-corners::before,
+        .scanner-corners::after,
+        .scanner-corners span::before,
+        .scanner-corners span::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #007AFF;
+            border-style: solid;
+            border-width: 0;
+        }
+        
+        .scanner-corners::before {
+            top: -2px;
+            left: -2px;
+            border-top-width: 4px;
+            border-left-width: 4px;
+            border-top-left-radius: 10px;
+        }
+        
+        .scanner-corners::after {
+            top: -2px;
+            right: -2px;
+            border-top-width: 4px;
+            border-right-width: 4px;
+            border-top-right-radius: 10px;
+        }
+        
+        .scanner-corners span::before {
+            bottom: -2px;
+            left: -2px;
+            border-bottom-width: 4px;
+            border-left-width: 4px;
+            border-bottom-left-radius: 10px;
+        }
+        
+        .scanner-corners span::after {
+            bottom: -2px;
+            right: -2px;
+            border-bottom-width: 4px;
+            border-right-width: 4px;
+            border-bottom-right-radius: 10px;
+        }
+        
+        .scanner-text {
+            color: white;
+            margin-top: 30px;
+            font-size: 16px;
+        }
+        
+        .scanner-cancel {
+            position: absolute;
+            bottom: 40px;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .badge {
+            background-color: #FF9500;
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            flex: 1;
+            margin-right: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-card:last-child {
+            margin-right: 0;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #007AFF;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .section-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-action {
+            color: #007AFF;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #E9E9E9;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #34C759;
+            border-radius: 3px;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .search-bar {
+            display: flex;
+            background-color: #EFEFF4;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .search-bar i {
+            color: #8E8E93;
+            margin-right: 10px;
+        }
+        
+        .search-input {
+            border: none;
+            background: transparent;
+            flex: 1;
+            font-size: 16px;
+            color: #000;
+        }
+        
+        .search-input::placeholder {
+            color: #8E8E93;
+        }
+        
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .action-button {
+            flex: 1;
+            padding: 12px;
+            margin-right: 10px;
+            text-align: center;
+            background-color: #F2F2F7;
+            border-radius: 8px;
+            color: #007AFF;
+            font-weight: 500;
+        }
+        
+        .action-button:last-child {
+            margin-right: 0;
+        }
+        
+        .action-button.primary {
+            background-color: #007AFF;
+            color: white;
+        }
+        
+        .alert {
+            background-color: #FFF8E6;
+            border-left: 4px solid #FFCC00;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #8A6D3B;
+        }
+        
+        .alert i {
+            margin-right: 10px;
+            color: #FFCC00;
+        }
+        
+        .alert.success {
+            background-color: #EAF9EB;
+            border-left-color: #34C759;
+            color: #3C763D;
+        }
+        
+        .alert.success i {
+            color: #34C759;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+        
+        .tag.blue {
+            background-color: #E9F6FF;
+            color: #007AFF;
+        }
+        
+        .tag.green {
+            background-color: #EAF9EB;
+            color: #34C759;
+        }
+        
+        .tag.orange {
+            background-color: #FFF8E6;
+            color: #FF9500;
+        }
+        
+        .tag.red {
+            background-color: #FFEFEF;
+            color: #FF3B30;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #EFEFEF;
+            margin: 15px 0;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: #E9F6FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007AFF;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .prototype-label {
+            text-align: center;
+            font-weight: 600;
+            margin-top: 10px;
+            color: #333;
+        }
+        
+        .segment-control {
+            display: flex;
+            background-color: #F2F2F7;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .segment-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #8E8E93;
+        }
+        
+        .segment-item.active {
+            background-color: #FFFFFF;
+            color: #007AFF;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .mini-badge {
+            width: 8px;
+            height: 8px;
+            background-color: #FF3B30;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #EFEFEF;
+        }
+        
+        .product-image {
+            width: 60px;
+            height: 60px;
+            background-color: #F2F2F7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .product-info {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .product-sku {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .product-stock {
+            font-size: 13px;
+            color: #34C759;
+        }
+        
+        .product-action {
+            padding: 8px;
+            color: #007AFF;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 30px;
+            right: 30px;
+            height: 2px;
+            background-color: #E9E9E9;
+            z-index: 1;
+        }
+        
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            background-color: #E9E9E9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8E8E93;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step.active {
+            background-color: #007AFF;
+            color: white;
+        }
+        
+        .step.completed {
+            background-color: #34C759;
+            color: white;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #EFEFEF;
+        }
+        
+        .detail-label {
+            color: #8E8E93;
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .floating-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background-color: #007AFF;
+            box-shadow: 0 4px 10px rgba(0,122,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 30px; color: #007AFF;">WMS iOS 应用原型设计</h1>
+    
+    <div class="prototype-container">
+        <!-- 登录界面 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="content" style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 30px;">
+                        <div style="text-align: center; margin-bottom: 50px;">
+                            <div style="width: 80px; height: 80px; background-color: #007AFF; border-radius: 20px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-box-open" style="font-size: 40px; color: white;"></i>
+                            </div>
+                            <h1 style="margin-top: 15px; font-size: 28px;">WMS仓储管理</h1>
+                            <p style="color: #888; margin-top: 5px;">智能移动仓库管理系统</p>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>用户名</label>
+                            <input type="text" class="input-field" placeholder="请输入用户名" value="admin">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>密码</label>
+                            <input type="password" class="input-field" placeholder="请输入密码" value="••••••••">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="remember" checked style="margin-right: 5px;">
+                                    <label for="remember" style="font-size: 14px; color: #888;">记住密码</label>
+                                </div>
+                                <a href="#" style="font-size: 14px; color: #007AFF; text-decoration: none;">忘记密码</a>
+                            </div>
+                        </div>
+                        
+                        <button class="button">登 录</button>
+                        
+                        <p style="text-align: center; margin-top: 30px; font-size: 14px; color: #888;">版本 1.0.0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">登录界面</div>
+        </div>
+        
+        <!-- 主页/仪表盘 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div class="status-bar-title">首页</div>
+                        <div><i class="fas fa-bell" style="position: relative; color: #888;"><span class="icon-badge">2</span></i></div>
+                    </div>
+                    <div class="content">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <div>
+                                <h1 class="title">你好，王经理</h1>
+                                <p class="subtitle">今天是星期五，祝您工作愉快</p>
+                            </div>
+                            <div class="avatar">王</div>
+                        </div>
+                        
+                        <div class="alert">
+                            <i class="fas fa-exclamation-circle"></i>有 5 个任务等待处理
+                        </div>
+                        
+                        <div class="stats-container">
+                            <div class="stat-card">
+                                <div class="stat-value">28</div>
+                                <div class="stat-label">今日收货</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">42</div>
+                                <div class="stat-label">今日发货</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">95%</div>
+                                <div class="stat-label">库存准确率</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>常用功能</span>
+                        </div>
+                        
+                        <div class="grid-menu">
+                            <div class="grid-item">
+                                <div class="grid-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="grid-title">收货</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="grid-title">上架</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                                <div class="grid-title">拣货</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="grid-title">库存查询</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="grid-title">盘点</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon">
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                                <div class="grid-title">出库</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>待处理任务</span>
+                            <span class="section-action">查看全部</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon">
+                                    <i class="fas fa-truck-loading"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">入库任务 #IN22031</div>
+                                    <div class="list-description">包含5种SKU，共28件</div>
+                                </div>
+                                <div class="list-right">
+                                    刚刚 <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #FFF8E6; color: #FF9500;">
+                                    <i class="fas fa-shipping-fast"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">出库任务 #OUT15692</div>
+                                    <div class="list-description">包含3种SKU，共12件</div>
+                                </div>
+                                <div class="list-right">
+                                    10分钟前 <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-bar">
+                        <div class="nav-item active">
+                            <i class="fas fa-home"></i>
+                            <span>首页</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-tasks"></i>
+                            <span>任务</span>
+                        </div>
+                        <div class="nav-item" style="position: relative;">
+                            <div style="width: 50px; height: 50px; background-color: #007AFF; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -20px;">
+                                <i class="fas fa-qrcode" style="color: white; font-size: 24px;"></i>
+                            </div>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>统计</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-user"></i>
+                            <span>我的</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">首页/仪表盘</div>
+        </div>
+        
+        <!-- 收货列表 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div class="status-bar-title">收货</div>
+                        <div><i class="fas fa-plus" style="color: #007AFF;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" placeholder="搜索收货单号、供应商">
+                        </div>
+                        
+                        <div class="segment-control">
+                            <div class="segment-item active">待处理</div>
+                            <div class="segment-item">进行中</div>
+                            <div class="segment-item">已完成</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="list-title">IN22031</div>
+                                        <span class="tag blue">今日</span>
+                                    </div>
+                                    <div class="list-description">供应商: 上海某电子有限公司</div>
+                                    <div class="list-description">SKU: 5种 / 数量: 28件</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="list-title">IN22030</div>
+                                        <span class="tag orange">昨日</span>
+                                    </div>
+                                    <div class="list-description">供应商: 广州某科技有限公司</div>
+                                    <div class="list-description">SKU: 3种 / 数量: 15件</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="list-title">IN22028</div>
+                                        <span class="tag orange">昨日</span>
+                                    </div>
+                                    <div class="list-description">供应商: 北京某贸易有限公司</div>
+                                    <div class="list-description">SKU: 8种 / 数量: 42件</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-bar">
+                        <div class="nav-item">
+                            <i class="fas fa-home"></i>
+                            <span>首页</span>
+                        </div>
+                        <div class="nav-item active">
+                            <i class="fas fa-tasks"></i>
+                            <span>任务</span>
+                        </div>
+                        <div class="nav-item" style="position: relative;">
+                            <div style="width: 50px; height: 50px; background-color: #007AFF; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -20px;">
+                                <i class="fas fa-qrcode" style="color: white; font-size: 24px;"></i>
+                            </div>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>统计</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-user"></i>
+                            <span>我的</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">收货列表</div>
+        </div>
+        
+        <!-- 收货详情 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            收货单详情
+                        </div>
+                        <div><i class="fas fa-ellipsis-v" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="card">
+                            <h2 style="margin-bottom: 15px; font-size: 18px;">收货单 #IN22031</h2>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">供应商</div>
+                                <div class="detail-value">上海某电子有限公司</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">预计到达</div>
+                                <div class="detail-value">2025-03-15</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">创建时间</div>
+                                <div class="detail-value">2025-03-14 15:30</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">状态</div>
+                                <div class="detail-value">
+                                    <span class="tag blue">待收货</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>待收货物品 (5)</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">智能手机</div>
+                                    <div class="product-sku">SKU: SP-10001</div>
+                                    <div style="display: flex; align-items: center; margin-top: 2px;">
+                                        <span style="font-size: 13px; margin-right: 10px;">计划: 10件</span>
+                                        <span style="font-size: 13px; color: #007AFF;">已收: 0件</span>
+                                    </div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-check-circle" style="color: #E9E9E9;"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-headphones" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">蓝牙耳机</div>
+                                    <div class="product-sku">SKU: HP-20023</div>
+                                    <div style="display: flex; align-items: center; margin-top: 2px;">
+                                        <span style="font-size: 13px; margin-right: 10px;">计划: 8件</span>
+                                        <span style="font-size: 13px; color: #007AFF;">已收: 0件</span>
+                                    </div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-check-circle" style="color: #E9E9E9;"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item" style="border-bottom: none;">
+                                <div class="product-image">
+                                    <i class="fas fa-keyboard" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">机械键盘</div>
+                                    <div class="product-sku">SKU: KB-30056</div>
+                                    <div style="display: flex; align-items: center; margin-top: 2px;">
+                                        <span style="font-size: 13px; margin-right: 10px;">计划: 5件</span>
+                                        <span style="font-size: 13px; color: #007AFF;">已收: 0件</span>
+                                    </div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-check-circle" style="color: #E9E9E9;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 10px; text-align: center; color: #888; font-size: 14px;">
+                            下拉查看更多...
+                        </div>
+                        
+                        <div style="margin-top: 30px; padding: 0 10px;">
+                            <button class="button">开始收货</button>
+                            <button class="button secondary" style="margin-top: 10px;">导出详情</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">收货详情</div>
+        </div>
+        
+        <!-- 扫码收货 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="scanner-overlay">
+                        <div class="scanner-frame">
+                            <div class="scanner-line"></div>
+                            <div class="scanner-corners"><span></span></div>
+                        </div>
+                        <div class="scanner-text">对准商品条码进行扫描</div>
+                        <div class="scanner-cancel">取消扫描</div>
+                    </div>
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            收货扫描
+                        </div>
+                        <div><i class="fas fa-keyboard" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content" style="padding-top: 0;">
+                        <div style="background-color: #007AFF; color: white; padding: 15px; margin: 0 -15px 15px -15px;">
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 5px;">收货单 #IN22031</div>
+                            <div style="font-size: 14px;">供应商: 上海某电子有限公司</div>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <div>已收货: 1/5种</div>
+                            <div>总进度: 20%</div>
+                        </div>
+                        
+                        <div class="section-header" style="margin-top: 15px;">
+                            <span>上次扫描</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="product-item" style="border-bottom: none;">
+                                <div class="product-image">
+                                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">智能手机</div>
+                                    <div class="product-sku">SKU: SP-10001</div>
+                                    <div style="margin-top: 4px;">
+                                        <span class="tag green">已收: 6/10</span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 24px; font-weight: 600; color: #34C759;">+1</div>
+                                    <div style="font-size: 12px; color: #888;">刚刚</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>收货进度</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">智能手机</div>
+                                    <div class="product-sku">SKU: SP-10001</div>
+                                    <div class="progress-bar" style="margin-top: 5px; height: 4px;">
+                                        <div class="progress-fill" style="width: 60%; background-color: #34C759;"></div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">6/10</div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-headphones" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">蓝牙耳机</div>
+                                    <div class="product-sku">SKU: HP-20023</div>
+                                    <div class="progress-bar" style="margin-top: 5px; height: 4px;">
+                                        <div class="progress-fill" style="width: 0%; background-color: #34C759;"></div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">0/8</div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item" style="border-bottom: none;">
+                                <div class="product-image">
+                                    <i class="fas fa-keyboard" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">机械键盘</div>
+                                    <div class="product-sku">SKU: KB-30056</div>
+                                    <div class="progress-bar" style="margin-top: 5px; height: 4px;">
+                                        <div class="progress-fill" style="width: 0%; background-color: #34C759;"></div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">0/5</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-row" style="margin-top: 20px;">
+                            <div class="action-button">
+                                <i class="fas fa-pause" style="margin-right: 5px;"></i> 暂停
+                            </div>
+                            <div class="action-button primary">
+                                <i class="fas fa-check" style="margin-right: 5px;"></i> 完成收货
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">扫码收货</div>
+        </div>
+        
+        <!-- 收货确认 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            收货确认
+                        </div>
+                        <div><i class="fas fa-ellipsis-v" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="alert success">
+                            <i class="fas fa-check-circle"></i>已扫描商品: 智能手机 (SP-10001)
+                        </div>
+                        
+                        <div class="card">
+                            <div style="display: flex; margin-bottom: 15px;">
+                                <div class="product-image" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-mobile-alt" style="font-size: 36px; color: #888;"></i>
+                                </div>
+                                <div style="flex: 1; margin-left: 15px;">
+                                    <h2 style="font-size: 18px; margin-bottom: 5px;">智能手机</h2>
+                                    <div style="font-size: 14px; color: #888; margin-bottom: 3px;">SKU: SP-10001</div>
+                                    <div style="font-size: 14px; color: #888; margin-bottom: 3px;">供应商: 上海某电子有限公司</div>
+                                    <div style="font-size: 14px; color: #888;">批次: B202503</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 14px; color: #888;">计划数量</div>
+                                    <div style="font-size: 20px; font-weight: 600;">10件</div>
+                                </div>
+                                <div style="text-align: center; flex: 1; border-left: 1px solid #EFEFEF; border-right: 1px solid #EFEFEF;">
+                                    <div style="font-size: 14px; color: #888;">已收货</div>
+                                    <div style="font-size: 20px; font-weight: 600;">6件</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 14px; color: #888;">剩余</div>
+                                    <div style="font-size: 20px; font-weight: 600;">4件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="divider"></div>
+                            
+                            <div class="input-group">
+                                <label>收货数量</label>
+                                <div style="display: flex; align-items: center;">
+                                    <button style="width: 40px; height: 40px; background-color: #F2F2F7; border: none; border-radius: 8px; font-size: 20px; font-weight: 600; color: #007AFF;">-</button>
+                                    <input type="text" class="input-field" value="1" style="margin: 0 10px; text-align: center;">
+                                    <button style="width: 40px; height: 40px; background-color: #F2F2F7; border: none; border-radius: 8px; font-size: 20px; font-weight: 600; color: #007AFF;">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>存放库位</label>
+                                <div style="display: flex;">
+                                    <input type="text" class="input-field" placeholder="扫描或输入库位" style="flex: 1; margin-right: 10px;">
+                                    <button style="width: 40px; height: 40px; background-color: #007AFF; border: none; border-radius: 8px; color: white;">
+                                        <i class="fas fa-qrcode"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>备注</label>
+                                <input type="text" class="input-field" placeholder="可选填">
+                            </div>
+                            
+                            <div style="display: flex; margin-top: 10px;">
+                                <button class="button secondary" style="flex: 1; margin-right: 10px;">取消</button>
+                                <button class="button" style="flex: 1;">确认收货</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">收货确认</div>
+        </div>
+        
+        <!-- 上架任务列表 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div class="status-bar-title">上架任务</div>
+                        <div><i class="fas fa-filter" style="color: #007AFF;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" placeholder="搜索上架任务、商品SKU">
+                        </div>
+                        
+                        <div class="segment-control">
+                            <div class="segment-item active">待处理</div>
+                            <div class="segment-item">进行中</div>
+                            <div class="segment-item">已完成</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EAF9EB; color: #34C759;">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="list-title">上架任务 #SH15023</div>
+                                        <span class="tag blue">今日</span>
+                                    </div>
+                                    <div class="list-description">商品: 智能手机等</div>
+                                    <div class="list-description">收货单: IN22031 / 数量: 15件</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EAF9EB; color: #34C759;">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="list-title">上架任务 #SH15022</div>
+                                        <span class="tag blue">今日</span>
+                                    </div>
+                                    <div class="list-description">商品: 蓝牙耳机等</div>
+                                    <div class="list-description">收货单: IN22030 / 数量: 8件</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EAF9EB; color: #34C759;">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="list-title">上架任务 #SH15021</div>
+                                        <span class="tag orange">昨日</span>
+                                    </div>
+                                    <div class="list-description">商品: 键盘鼠标套装等</div>
+                                    <div class="list-description">收货单: IN22028 / 数量: 12件</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-bar">
+                        <div class="nav-item">
+                            <i class="fas fa-home"></i>
+                            <span>首页</span>
+                        </div>
+                        <div class="nav-item active">
+                            <i class="fas fa-tasks"></i>
+                            <span>任务</span>
+                        </div>
+                        <div class="nav-item" style="position: relative;">
+                            <div style="width: 50px; height: 50px; background-color: #007AFF; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -20px;">
+                                <i class="fas fa-qrcode" style="color: white; font-size: 24px;"></i>
+                            </div>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>统计</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-user"></i>
+                            <span>我的</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">上架任务列表</div>
+        </div>
+        
+        <!-- 上架任务详情 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            上架任务详情
+                        </div>
+                        <div><i class="fas fa-ellipsis-v" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="card">
+                            <h2 style="margin-bottom: 15px; font-size: 18px;">上架任务 #SH15023</h2>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">关联收货单</div>
+                                <div class="detail-value">IN22031</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">创建时间</div>
+                                <div class="detail-value">2025-03-15 10:30</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">状态</div>
+                                <div class="detail-value">
+                                    <span class="tag blue">待上架</span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">优先级</div>
+                                <div class="detail-value">
+                                    <span class="tag red">高</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>待上架物品 (3)</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">智能手机</div>
+                                    <div class="product-sku">SKU: SP-10001</div>
+                                    <div style="font-size: 13px; color: #888;">
+                                        收货区域: A-临时区
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">6件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-headphones" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">蓝牙耳机</div>
+                                    <div class="product-sku">SKU: HP-20023</div>
+                                    <div style="font-size: 13px; color: #888;">
+                                        收货区域: A-临时区
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">4件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item" style="border-bottom: none;">
+                                <div class="product-image">
+                                    <i class="fas fa-keyboard" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">机械键盘</div>
+                                    <div class="product-sku">SKU: KB-30056</div>
+                                    <div style="font-size: 13px; color: #888;">
+                                        收货区域: A-临时区
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">5件</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px; padding: 0 10px;">
+                            <button class="button">开始上架</button>
+                            <button class="button secondary" style="margin-top: 10px;">打印任务单</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">上架任务详情</div>
+        </div>
+        
+        <!-- 扫码上架 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            上架操作
+                        </div>
+                        <div><i class="fas fa-ellipsis-v" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div style="background-color: #34C759; color: white; padding: 15px; margin: 0 -15px 15px -15px;">
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 5px;">上架任务 #SH15023</div>
+                            <div style="font-size: 14px;">总物品: 15件 / 待上架: 15件</div>
+                        </div>
+                        
+                        <div class="step-indicator">
+                            <div class="step completed">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="step active">2</div>
+                            <div class="step">3</div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 style="margin-bottom: 10px; font-size: 16px;">步骤 2: 扫描商品</h3>
+                            <p style="color: #888; font-size: 14px; margin-bottom: 15px;">请扫描需要上架的商品条码</p>
+                            
+                            <div style="display: flex;">
+                                <input type="text" class="input-field" placeholder="扫描或输入商品条码" style="flex: 1; margin-right: 10px;">
+                                <button style="width: 40px; height: 40px; background-color: #007AFF; border: none; border-radius: 8px; color: white;">
+                                    <i class="fas fa-qrcode"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>待上架商品</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">智能手机</div>
+                                    <div class="product-sku">SKU: SP-10001</div>
+                                    <div style="display: flex; align-items: center; margin-top: 2px;">
+                                        <span style="font-size: 13px; margin-right: 10px;">总数: 6件</span>
+                                        <span style="font-size: 13px; color: #FF9500;">待上架: 6件</span>
+                                    </div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-angle-right" style="color: #CCCCCC;"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-headphones" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">蓝牙耳机</div>
+                                    <div class="product-sku">SKU: HP-20023</div>
+                                    <div style="display: flex; align-items: center; margin-top: 2px;">
+                                        <span style="font-size: 13px; margin-right: 10px;">总数: 4件</span>
+                                        <span style="font-size: 13px; color: #FF9500;">待上架: 4件</span>
+                                    </div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-angle-right" style="color: #CCCCCC;"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item" style="border-bottom: none;">
+                                <div class="product-image">
+                                    <i class="fas fa-keyboard" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">机械键盘</div>
+                                    <div class="product-sku">SKU: KB-30056</div>
+                                    <div style="display: flex; align-items: center; margin-top: 2px;">
+                                        <span style="font-size: 13px; margin-right: 10px;">总数: 5件</span>
+                                        <span style="font-size: 13px; color: #FF9500;">待上架: 5件</span>
+                                    </div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-angle-right" style="color: #CCCCCC;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-row" style="margin-top: 20px;">
+                            <div class="action-button">
+                                <i class="fas fa-arrow-left" style="margin-right: 5px;"></i> 返回
+                            </div>
+                            <div class="action-button primary" style="opacity: 0.5;">
+                                <i class="fas fa-arrow-right" style="margin-right: 5px;"></i> 下一步
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">扫码上架</div>
+        </div>
+        
+        <!-- 确认上架位置 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            确认上架位置
+                        </div>
+                        <div><i class="fas fa-ellipsis-v" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="alert success">
+                            <i class="fas fa-check-circle"></i>已扫描商品: 智能手机 (SP-10001)
+                        </div>
+                        
+                        <div class="card">
+                            <div style="display: flex; margin-bottom: 15px;">
+                                <div class="product-image" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-mobile-alt" style="font-size: 36px; color: #888;"></i>
+                                </div>
+                                <div style="flex: 1; margin-left: 15px;">
+                                    <h2 style="font-size: 18px; margin-bottom: 5px;">智能手机</h2>
+                                    <div style="font-size: 14px; color: #888; margin-bottom: 3px;">SKU: SP-10001</div>
+                                    <div style="font-size: 14px; color: #888; margin-bottom: 3px;">批次: B202503</div>
+                                    <div style="font-size: 14px; color: #888;">数量: 6件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="divider"></div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <h3 style="font-size: 16px; margin-bottom: 10px;">推荐上架位置</h3>
+                                <div style="display: flex; margin-bottom: 10px;">
+                                    <div style="flex: 1; padding: 10px; background-color: #EAF9EB; border-radius: 8px; margin-right: 10px;">
+                                        <div style="font-size: 14px; color: #3C763D; margin-bottom: 5px;">主要库位</div>
+                                        <div style="font-weight: 600; font-size: 16px;">A-03-02-01</div>
+                                    </div>
+                                    <div style="flex: 1; padding: 10px; background-color: #F2F2F7; border-radius: 8px;">
+                                        <div style="font-size: 14px; color: #888; margin-bottom: 5px;">备选库位</div>
+                                        <div style="font-weight: 600; font-size: 16px;">B-05-01-03</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>上架库位</label>
+                                <div style="display: flex;">
+                                    <input type="text" class="input-field" placeholder="扫描或输入库位" style="flex: 1; margin-right: 10px;" value="A-03-02-01">
+                                    <button style="width: 40px; height: 40px; background-color: #007AFF; border: none; border-radius: 8px; color: white;">
+                                        <i class="fas fa-qrcode"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>上架数量</label>
+                                <div style="display: flex; align-items: center;">
+                                    <button style="width: 40px; height: 40px; background-color: #F2F2F7; border: none; border-radius: 8px; font-size: 20px; font-weight: 600; color: #007AFF;">-</button>
+                                    <input type="text" class="input-field" value="6" style="margin: 0 10px; text-align: center;">
+                                    <button style="width: 40px; height: 40px; background-color: #F2F2F7; border: none; border-radius: 8px; font-size: 20px; font-weight: 600; color: #007AFF;">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>备注</label>
+                                <input type="text" class="input-field" placeholder="可选填">
+                            </div>
+                            
+                            <div style="display: flex; margin-top: 10px;">
+                                <button class="button secondary" style="flex: 1; margin-right: 10px;">返回</button>
+                                <button class="button" style="flex: 1;">确认上架</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">确认上架位置</div>
+        </div>
+        
+        <!-- 库存查询 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div class="status-bar-title">库存查询</div>
+                        <div><i class="fas fa-history" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" placeholder="输入商品名称、SKU、库位...">
+                            <i class="fas fa-qrcode" style="color: #007AFF; margin-left: 10px;"></i>
+                        </div>
+                        
+                        <div class="segment-control">
+                            <div class="segment-item active">商品</div>
+                            <div class="segment-item">库位</div>
+                            <div class="segment-item">批次</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-mobile-alt" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">智能手机</div>
+                                    <div class="product-sku">SKU: SP-10001</div>
+                                    <div class="product-stock">库存: 32件 / 6个库位</div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-headphones" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">蓝牙耳机</div>
+                                    <div class="product-sku">SKU: HP-20023</div>
+                                    <div class="product-stock">库存: 48件 / 4个库位</div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <i class="fas fa-keyboard" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">机械键盘</div>
+                                    <div class="product-sku">SKU: KB-30056</div>
+                                    <div class="product-stock">库存: 25件 / 3个库位</div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="product-item" style="border-bottom: none;">
+                                <div class="product-image">
+                                    <i class="fas fa-mouse" style="font-size: 24px; color: #888;"></i>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-name">无线鼠标</div>
+                                    <div class="product-sku">SKU: MS-40012</div>
+                                    <div class="product-stock">库存: 56件 / 5个库位</div>
+                                </div>
+                                <div class="product-action">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 10px; text-align: center; color: #888; font-size: 14px;">
+                            下拉查看更多...
+                        </div>
+                    </div>
+                    <div class="nav-bar">
+                        <div class="nav-item">
+                            <i class="fas fa-home"></i>
+                            <span>首页</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-tasks"></i>
+                            <span>任务</span>
+                        </div>
+                        <div class="nav-item" style="position: relative;">
+                            <div style="width: 50px; height: 50px; background-color: #007AFF; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -20px;">
+                                <i class="fas fa-qrcode" style="color: white; font-size: 24px;"></i>
+                            </div>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>统计</span>
+                        </div>
+                        <div class="nav-item active">
+                            <i class="fas fa-user"></i>
+                            <span>我的</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">库存查询</div>
+        </div>
+        
+        <!-- 库存详情 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div>
+                            <i class="fas fa-chevron-left" style="margin-right: 10px;"></i>
+                            库存详情
+                        </div>
+                        <div><i class="fas fa-ellipsis-v" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="card">
+                            <div style="display: flex; margin-bottom: 15px;">
+                                <div class="product-image" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-mobile-alt" style="font-size: 36px; color: #888;"></i>
+                                </div>
+                                <div style="flex: 1; margin-left: 15px;">
+                                    <h2 style="font-size: 18px; margin-bottom: 5px;">智能手机</h2>
+                                    <div style="font-size: 14px; color: #888; margin-bottom: 3px;">SKU: SP-10001</div>
+                                    <div style="margin-top: 5px;">
+                                        <span class="tag green">可用: 32件</span>
+                                        <span class="tag orange">锁定: 2件</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="divider"></div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 14px; color: #888;">安全库存</div>
+                                    <div style="font-size: 20px; font-weight: 600;">15件</div>
+                                </div>
+                                <div style="text-align: center; flex: 1; border-left: 1px solid #EFEFEF; border-right: 1px solid #EFEFEF;">
+                                    <div style="font-size: 14px; color: #888;">平均7日出库</div>
+                                    <div style="font-size: 20px; font-weight: 600;">4.2件</div>
+                                </div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 14px; color: #888;">库存周转</div>
+                                    <div style="font-size: 20px; font-weight: 600;">7.6天</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>库存分布</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">A-03-02-01</div>
+                                    <div class="list-description">批次: B202503 / 收货日: 03-15</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">6件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">A-03-02-02</div>
+                                    <div class="list-description">批次: B202502 / 收货日: 03-10</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">12件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">B-05-01-03</div>
+                                    <div class="list-description">批次: B202501 / 收货日: 02-28</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">8件</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item" style="border-bottom: none;">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">C-01-03-04</div>
+                                    <div class="list-description">批次: B202412 / 收货日: 02-15</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 600;">6件</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>库存操作</span>
+                        </div>
+                        
+                        <div class="grid-menu" style="grid-template-columns: repeat(2, 1fr);">
+                            <div class="grid-item">
+                                <div class="grid-icon" style="background-color: #FFF8E6; color: #FF9500;">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="grid-title">库存移动</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon" style="background-color: #FFEFEF; color: #FF3B30;">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div class="grid-title">库存冻结</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon" style="background-color: #E9F6FF; color: #007AFF;">
+                                    <i class="fas fa-print"></i>
+                                </div>
+                                <div class="grid-title">打印标签</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-icon" style="background-color: #EAF9EB; color: #34C759;">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                                <div class="grid-title">查看记录</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">库存详情</div>
+        </div>
+        
+        <!-- 个人中心 -->
+        <div>
+            <div class="prototype">
+                <div class="notch"></div>
+                <div class="screen">
+                    <div class="status-bar">
+                        <div class="status-bar-title">我的</div>
+                        <div><i class="fas fa-cog" style="color: #888;"></i></div>
+                    </div>
+                    <div class="content">
+                        <div class="card" style="margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center;">
+                                <div class="avatar" style="width: 60px; height: 60px; font-size: 24px;">王</div>
+                                <div style="margin-left: 15px; flex: 1;">
+                                    <h2 style="font-size: 18px; margin-bottom: 5px;">王经理</h2>
+                                    <div style="font-size: 14px; color: #888;">仓库主管 | ID: 10086</div>
+                                </div>
+                                <div>
+                                    <i class="fas fa-chevron-right" style="color: #CCCCCC;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header" style="margin-top: 10px;">
+                            <span>工作统计</span>
+                        </div>
+                        
+                        <div class="stats-container">
+                            <div class="stat-card">
+                                <div class="stat-value">36</div>
+                                <div class="stat-label">今日任务</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">28</div>
+                                <div class="stat-label">已完成</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">98%</div>
+                                <div class="stat-label">准确率</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>常用功能</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #E9F6FF; color: #007AFF;">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">操作记录</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #FFF8E6; color: #FF9500;">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">我的收藏</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">任务报表</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item" style="border-bottom: none;">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">消息通知</div>
+                                </div>
+                                <div class="list-right">
+                                    <span class="badge">2</span>
+                                    <i class="fas fa-chevron-right" style="margin-left: 5px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header">
+                            <span>系统设置</span>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">通用设置</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">安全设置</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">帮助与反馈</div>
+                                </div>
+                                <div class="list-right">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item" style="border-bottom: none;">
+                                <div class="list-icon" style="background-color: #EFEFF4; color: #555;">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="list-content">
+                                    <div class="list-title">关于</div>
+                                </div>
+                                <div class="list-right">
+                                    <div style="font-size: 14px; color: #888; margin-right: 5px;">v1.0.0</div>
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="button danger" style="margin-top: 30px;">退出登录</button>
+                    </div>
+                    <div class="nav-bar">
+                        <div class="nav-item">
+                            <i class="fas fa-home"></i>
+                            <span>首页</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-tasks"></i>
+                            <span>任务</span>
+                        </div>
+                        <div class="nav-item" style="position: relative;">
+                            <div style="width: 50px; height: 50px; background-color: #007AFF; border-radius: 25px; display: flex; align-items: center; justify-content: center; margin-top: -20px;">
+                                <i class="fas fa-qrcode" style="color: white; font-size: 24px;"></i>
+                            </div>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>统计</span>
+                        </div>
+                        <div class="nav-item active">
+                            <i class="fas fa-user"></i>
+                            <span>我的</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="prototype-label">个人中心</div>
+        </div>
+    </div>
+</body>
+</html>
